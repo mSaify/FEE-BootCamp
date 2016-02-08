@@ -8,56 +8,67 @@ $(document).ready(function () {
         headers: {
             'X-Mashape-Key': 'Bs5BvTwMeNmshIVgyxatfWRfPMkNp1Dmi30jsnLUNZ8zyDyBW8'
         }
-    })
-	.done(function (data) {
+    }).done(function (data) {
 
-	    for (var i = 0; i < data.length; i++) {
-	        var elem = document.createElement('option');
-	        $('.currency-selecter')
-			.append($(elem)
-			.attr('value', data[i].id).text(data[i].description.slice(4)));
+        var i = 0,
+            len = data.length,
+            option,
+            option2,
+            datum,
+            docFrag = document.createDocumentFragment(),
+            docFrag2 = document.createDocumentFragment(),
+            selectEl = $('.currency-selecter');
+
+	    for (i = 0; i < len; i++) {
+            datum = data[i];
+            option = document.createElement('option');
+            option.value = datum.id;
+            option.text = datum.description.slice(4);
+            option2 = document.createElement('option');
+            option2.value = option.value;
+            option2.text = option.text;
+            docFrag.appendChild(option);
+            docFrag2.appendChild(option2);
 	    }
+
+        selectEl[0].appendChild(docFrag);
+        selectEl[1].appendChild(docFrag2);
 	});
 
     $('.currency-From').on('keyup', function (e) {
         clearTimeout($.data(this, 'timer'));
         if (e.keyCode == 13) {
             getConvertedCurrencyVal();
-        }
-        else
+        } else {
             $(this).data('timer', setTimeout(getConvertedCurrencyVal, 200));
+        }
     });
 
-    $(".js-currencyFrom").change(function () {
-        getConvertedCurrencyVal();
-    });
+    $(".js-currencyFrom").change(getConvertedCurrencyVal);
 
-    $(".js-currencyTo").change(function () {
-        getConvertedCurrencyVal();
-    });
+    $(".js-currencyTo").change(getConvertedCurrencyVal);
 
     function getConvertedCurrencyVal() {
-        var fromCurrency = $('.js-currencyFrom :selected').val();
-        var toCurrency = $('.js-currencyTo :selected').val();
+        var fromCurrency = $('.js-currencyFrom').val();
+        var toCurrency = $('.js-currencyTo').val();
 
-        var fromamount = $('.currency-From').val();
+        var fromAmount = $('.currency-From').val();
 
-        if (fromamount === '') {
+        if (fromAmount === '') {
             $('.js-error-message').text("Please Enter Amount to be Converted!!");
         } else {
 
             $('.js-error-message').text("");
-            var amount = parseInt(fromamount);
+            fromAmount = parseInt(fromAmount, 10);
 
             $.ajax({
                 url: 'https://currencyconverter.p.mashape.com/?from=' + fromCurrency +
-                    '&from_amount=' + amount + '&to=' + toCurrency,
+                    '&from_amount=' + fromAmount + '&to=' + toCurrency,
                 dataType: 'json',
                 headers: {
                     'X-Mashape-Key': 'Bs5BvTwMeNmshIVgyxatfWRfPMkNp1Dmi30jsnLUNZ8zyDyBW8'
                 }
-            })
-           .done(function (data) {
+            }).done(function (data) {
 
                if (data.error !== undefined) {
 
